@@ -26,7 +26,7 @@ function install_package() {
   if [[ "$platform" == 'mac' ]]; then
     brew install $1
   elif [[ "$platform" == 'linux' ]]; then
-    apt-get install $1
+    sudo apt-get install $1
   fi
 }
 
@@ -35,7 +35,7 @@ function update_package_manager() {
   if [[ "$platform" == 'mac' ]]; then
     brew update
   elif [[ "$platform" == 'linux' ]]; then
-    apt-get upgrade
+    sudo apt-get update
   fi
 }
 
