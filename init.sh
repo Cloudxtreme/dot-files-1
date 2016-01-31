@@ -22,7 +22,7 @@ function get_platform() {
 
 # runs a command, exits if failes
 function run_cmd() {
-  $1 || { echo >&2 "Failed to run $1, aborting"; exit 1; }
+  $@ || { echo >&2 "Failed to run $1, aborting"; exit 1; }
 }
 
 # Install given package for platform
@@ -53,8 +53,8 @@ function check_for_deps() {
     hash brew 2>/dev/null || { echo >&2 "I require brew but it's not installed. Installing homebrew "; install_brew; }
   elif [[ "$platform" == 'mac' ]]; then
     hash apt-get 2>/dev/null || { echo >&2 "I require apt-get but it's not installed. Aborting"; exit 1; }
-    hash realpath 2>/dev/null || { sudo apt-get install realpath; }
   fi
+  install_package realpath
 }
 
 function install_oh_my_zsh() {
