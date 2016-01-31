@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # Get OS info (mac or linux)
 function get_platform() {
@@ -22,7 +22,7 @@ function get_platform() {
 
 # Install given package for platform
 function install_package() {
-  echo "installing $1 for $platform"
+  printf "${GREEN}Installing $1 for $platform ${NORMAL}\n"
   if [[ "$platform" == 'mac' ]]; then
     brew install $1
   elif [[ "$platform" == 'linux' ]]; then
@@ -31,7 +31,7 @@ function install_package() {
 }
 
 function update_package_manager() {
-  echo "installing $1 for $platform"
+  printf "${GREEN}Updating package manager${NORMAL}\n"
   if [[ "$platform" == 'mac' ]]; then
     brew update
   elif [[ "$platform" == 'linux' ]]; then
@@ -49,11 +49,9 @@ function check_for_deps() {
   elif [[ "$platform" == 'mac' ]]; then
     hash apt-get 2>/dev/null || { echo >&2 "I require apt-get but it's not installed. Aborting"; exit 1; }
   fi
-  install_package realpath
 }
 
-# rudely copied from install.sh for oh-my-zsh, mainly cause i dont want to env zsh
-function install_oh_my_zsh() {
+function setup_colors() {
   # Use colors, but only if connected to a terminal, and that terminal
   # supports them.
   if which tput >/dev/null 2>&1; then
@@ -74,7 +72,10 @@ function install_oh_my_zsh() {
     BOLD=""
     NORMAL=""
   fi
+}
 
+# rudely copied from install.sh for oh-my-zsh, mainly cause i dont want to env zsh
+function install_oh_my_zsh() {
   CHECK_ZSH_INSTALLED=$(grep /zsh$ /etc/shells | wc -l)
   if [ ! $CHECK_ZSH_INSTALLED -ge 1 ]; then
     printf "${YELLOW}Zsh is not installed!${NORMAL} Please install zsh first!\n"
@@ -162,30 +163,41 @@ function install_oh_my_zsh() {
   printf "${NORMAL}"
 }
 
+function mv_if_exists() {
+  if [ -f $1 ]; then
+    mv $1 $2
+  else
+    printf "${RED}File $1 does not exist.${NORMAL}\n"
+  fi
+}
+
 homedir="$(realpath ~)"
 
 function link_zshrc() {
-  mv "$homedir/.zshrc" "$homedir/.zshrc.old"
+  mv_if_exists "$homedir/.zshrc" "$homedir/.zshrc.old"
   ln -s "$homedir/dot-files/zsh/zshrc" "$homedir/.zshrc"
 }
 
 
 function link_tmux_conf() {
-  mv "$homedir/.tmux.conf" "$homedir/.tmux.conf.old"
+  mv_if_exists "$homedir/.tmux.conf" "$homedir/.tmux.conf.old"
   ln -s "$homedir/dot-files/tmux/tmux.conf" "$homedir/.tmux.conf"
 }
 
 function link_vimrc() {
-  mv "$homedir/.vimrc" "$homedir/.vimrc.old"
+  mv_if_exists "$homedir/.vimrc" "$homedir/.vimrc.old"
   ln -s "$homedir/dot-files/vim/vimrc" "$homedir/.vimrc"
 }
+
 
 # The meat of the cake
 
 ## Getting prepared for the show
 get_platform
+setup_colors
 check_for_deps
 update_package_manager
+install_package realpath
 
 ## Installing and linking
 install_package zsh
