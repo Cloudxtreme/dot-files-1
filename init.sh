@@ -51,9 +51,23 @@ function check_for_deps() {
   fi
 }
 
-
 function install_oh_my_zsh() {
   sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+}
+
+homedir="$(realpath ~)"
+
+function link_zshrc() {
+  ln -s "$homedir/dot-files/zsh/zshrc" "$homedir/.zshrc"
+}
+
+
+function link_tmux_conf() {
+  ln -s "$homedir/dot-files/tmux/tmux.conf" "$homedir/.tmux.conf"
+}
+
+function link_vimrc() {
+  ln -s "$homedir/dot-files/vim/vimrc" "$homedir/.vimrc"
 }
 
 # The meat of the cake
@@ -63,8 +77,11 @@ get_platform
 check_for_deps
 update_package_manager
 
-# ZSH install
+# Installing and linking
 install_package zsh
 install_oh_my_zsh
-
 install_package tmux
+
+link_zshrc
+link_tmux_conf
+link_vimrc
