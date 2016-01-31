@@ -58,21 +58,24 @@ function check_for_deps() {
 }
 
 function install_oh_my_zsh() {
-  sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh);exit 0;"
 }
 
 homedir="$(realpath ~)"
 
 function link_zshrc() {
+  mv "$homedir/.zshrc" "$homedir/.zshrc.old"
   ln -s "$homedir/dot-files/zsh/zshrc" "$homedir/.zshrc"
 }
 
 
 function link_tmux_conf() {
+  mv "$homedir/.tmux.conf" "$homedir/.tmux.conf.old"
   ln -s "$homedir/dot-files/tmux/tmux.conf" "$homedir/.tmux.conf"
 }
 
 function link_vimrc() {
+  mv "$homedir/.vimrc" "$homedir/.vimrc.old"
   ln -s "$homedir/dot-files/vim/vimrc" "$homedir/.vimrc"
 }
 
