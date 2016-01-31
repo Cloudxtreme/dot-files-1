@@ -141,6 +141,7 @@ function install_oh_my_zsh() {
     echo "Error: git is not installed"
     exit 1
   }
+
   env git clone --depth=1 https://github.com/robbyrussell/oh-my-zsh.git $ZSH || {
     printf "Error: git clone of oh-my-zsh repo failed\n"
     exit 1
@@ -189,13 +190,7 @@ function install_oh_my_zsh() {
   fi
 
   printf "${GREEN}"
-  echo '         __                                     __   '
-  echo '  ____  / /_     ____ ___  __  __   ____  _____/ /_  '
-  echo ' / __ \/ __ \   / __ `__ \/ / / /  /_  / / ___/ __ \ '
-  echo '/ /_/ / / / /  / / / / / / /_/ /    / /_(__  ) / / / '
-  echo '\____/_/ /_/  /_/ /_/ /_/\__, /    /___/____/_/ /_/  '
-  echo '                        /____/                       ....is now installed!'
-  echo ''
+  echo 'oh my zsh is now installed'
   printf "${NORMAL}"
 }
 
