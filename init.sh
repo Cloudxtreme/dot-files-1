@@ -1,5 +1,61 @@
 #!/bin/bash -e
 
+# ---------------------------------------------- #
+# ╻ ╻┏━╸╻  ┏━┓┏━╸┏━┓   ┏━╸╻ ╻┏┓╻┏━╸╺┳╸╻┏━┓┏┓╻┏━┓
+# ┣━┫┣╸ ┃  ┣━┛┣╸ ┣┳┛   ┣╸ ┃ ┃┃┗┫┃   ┃ ┃┃ ┃┃┗┫┗━┓
+# ╹ ╹┗━╸┗━╸╹  ┗━╸╹┗╸   ╹  ┗━┛╹ ╹┗━╸ ╹ ╹┗━┛╹ ╹┗━┛
+# ---------------------------------------------- #
+
+function mv_if_exists() {
+  if [ -f $1 ]; then
+    print_green "Moving $1 to $2"
+    mv $1 $2
+  else
+    printf "${RED}File $1 does not exist.${NORMAL}, not moving\n"
+  fi
+}
+
+function set_homedir() {
+  homedir="$(realpath ~)"
+}
+
+function print_green() {
+  printf "${GREEN}$@${NORMAL}\n"
+}
+
+function print_red() {
+  printf "${RED}$@${NORMAL}\n"
+}
+
+function setup_colors() {
+  # Use colors, but only if connected to a terminal, and that terminal
+  # supports them.
+  if which tput >/dev/null 2>&1; then
+    ncolors=$(tput colors)
+  fi
+  if [ -t 1 ] && [ -n "$ncolors" ] && [ "$ncolors" -ge 8 ]; then
+    RED="$(tput setaf 1)"
+    GREEN="$(tput setaf 2)"
+    YELLOW="$(tput setaf 3)"
+    BLUE="$(tput setaf 4)"
+    BOLD="$(tput bold)"
+    NORMAL="$(tput sgr0)"
+  else
+    RED=""
+    GREEN=""
+    YELLOW=""
+    BLUE=""
+    BOLD=""
+    NORMAL=""
+  fi
+}
+
+# ---------------------------------------------- #
+# ╻┏┓╻┏━┓╺┳╸┏━┓╻  ╻     ┏━╸╻ ╻┏┓╻┏━╸╺┳╸╻┏━┓┏┓╻┏━┓
+# ┃┃┗┫┗━┓ ┃ ┣━┫┃  ┃     ┣╸ ┃ ┃┃┗┫┃   ┃ ┃┃ ┃┃┗┫┗━┓
+# ╹╹ ╹┗━┛ ╹ ╹ ╹┗━╸┗━╸   ╹  ┗━┛╹ ╹┗━╸ ╹ ╹┗━┛╹ ╹┗━┛
+# ---------------------------------------------- #
+
 # Get OS info (mac or linux)
 function get_platform() {
   unamestr=`echo $OSTYPE`
@@ -19,14 +75,6 @@ function get_platform() {
     platform='unknown'
   fi
   print_green "You are attempting to init on $platform"
-}
-
-function print_green() {
-  printf "${GREEN}$@${NORMAL}\n"
-}
-
-function print_red() {
-  printf "${RED}$@${NORMAL}\n"
 }
 
 # Install given package for platform
@@ -59,29 +107,6 @@ function check_for_deps() {
     hash brew 2>/dev/null || { echo >&2 "I require brew but it's not installed. Installing homebrew "; install_brew; }
   elif [[ "$platform" == 'mac' ]]; then
     hash apt-get 2>/dev/null || { echo >&2 "I require apt-get but it's not installed. Aborting"; exit 1; }
-  fi
-}
-
-function setup_colors() {
-  # Use colors, but only if connected to a terminal, and that terminal
-  # supports them.
-  if which tput >/dev/null 2>&1; then
-    ncolors=$(tput colors)
-  fi
-  if [ -t 1 ] && [ -n "$ncolors" ] && [ "$ncolors" -ge 8 ]; then
-    RED="$(tput setaf 1)"
-    GREEN="$(tput setaf 2)"
-    YELLOW="$(tput setaf 3)"
-    BLUE="$(tput setaf 4)"
-    BOLD="$(tput bold)"
-    NORMAL="$(tput sgr0)"
-  else
-    RED=""
-    GREEN=""
-    YELLOW=""
-    BLUE=""
-    BOLD=""
-    NORMAL=""
   fi
 }
 
@@ -174,25 +199,11 @@ function install_oh_my_zsh() {
   printf "${NORMAL}"
 }
 
-function mv_if_exists() {
-  if [ -f $1 ]; then
-    print_green "Moving $1 to $2"
-    mv $1 $2
-  else
-    printf "${RED}File $1 does not exist.${NORMAL}, not moving\n"
-  fi
-}
-
-function set_homedir() {
-  homedir="$(realpath ~)"
-}
-
 function link_zshrc() {
   print_green "Linking zshrc"
   mv_if_exists "$homedir/.zshrc" "$homedir/.zshrc.old"
   ln -s "$homedir/dot-files/zsh/zshrc" "$homedir/.zshrc"
 }
-
 
 function link_tmux_conf() {
   print_green "Linking tmux conf"
@@ -205,7 +216,6 @@ function link_vimrc() {
   mv_if_exists "$homedir/.vimrc" "$homedir/.vimrc.old"
   ln -s "$homedir/dot-files/vim/vimrc" "$homedir/.vimrc"
 }
-
 
 function construct_vimrc() {
   # for now lets just use basic_vimrc
