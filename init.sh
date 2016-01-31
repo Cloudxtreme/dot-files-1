@@ -18,11 +18,20 @@ function get_platform() {
   else
     platform='unknown'
   fi
+  print_green "You are attempting to init on $platform"
+}
+
+function print_green() {
+  printf "${GREEN}$@${NORMAL}\n"
+}
+
+function print_red() {
+  printf "${RED}$@${NORMAL}\n"
 }
 
 # Install given package for platform
 function install_package() {
-  printf "${GREEN}Installing $1 for $platform ${NORMAL}\n"
+  print_green "Install $1 for $platform"
   if [[ "$platform" == 'mac' ]]; then
     brew install $1
   elif [[ "$platform" == 'linux' ]]; then
@@ -31,7 +40,7 @@ function install_package() {
 }
 
 function update_package_manager() {
-  printf "${GREEN}Updating package manager${NORMAL}\n"
+  print_green "Updating package manager"
   if [[ "$platform" == 'mac' ]]; then
     brew update
   elif [[ "$platform" == 'linux' ]]; then
@@ -40,10 +49,12 @@ function update_package_manager() {
 }
 
 function install_brew() {
+  print_green "Installing homebrew"
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 }
 
 function check_for_deps() {
+  print_green "Checking for dependencies"
   if [[ "$platform" == 'mmac' ]]; then
     hash brew 2>/dev/null || { echo >&2 "I require brew but it's not installed. Installing homebrew "; install_brew; }
   elif [[ "$platform" == 'mac' ]]; then
@@ -165,9 +176,10 @@ function install_oh_my_zsh() {
 
 function mv_if_exists() {
   if [ -f $1 ]; then
+    print_green "Moving $1 to $2"
     mv $1 $2
   else
-    printf "${RED}File $1 does not exist.${NORMAL}\n"
+    printf "${RED}File $1 does not exist.${NORMAL}, not moving\n"
   fi
 }
 
@@ -176,23 +188,40 @@ function set_homedir() {
 }
 
 function link_zshrc() {
+  print_green "Linking zshrc"
   mv_if_exists "$homedir/.zshrc" "$homedir/.zshrc.old"
   ln -s "$homedir/dot-files/zsh/zshrc" "$homedir/.zshrc"
 }
 
 
 function link_tmux_conf() {
+  print_green "Linking tmux conf"
   mv_if_exists "$homedir/.tmux.conf" "$homedir/.tmux.conf.old"
   ln -s "$homedir/dot-files/tmux/tmux.conf" "$homedir/.tmux.conf"
 }
 
 function link_vimrc() {
+  print_green "Linking vimrc"
   mv_if_exists "$homedir/.vimrc" "$homedir/.vimrc.old"
   ln -s "$homedir/dot-files/vim/vimrc" "$homedir/.vimrc"
 }
 
 
-# The meat of the cake
+function construct_vimrc() {
+  # for now lets just use basic_vimrc
+  cp "$homedir/dot-files/vim/vimrcs/basic_vimrc" "$homedir/dot-files/vim/vimrc"
+}
+
+function install_vim() {
+  construct_vimrc
+  link_vimrc
+}
+
+# ----------------------------------------------------------- #
+#╺┳╸╻ ╻┏━╸   ┏┳┓┏━╸┏━┓╺┳╸   ┏━┓┏━╸   ╺┳╸╻ ╻┏━╸   ┏━╸┏━┓╻┏ ┏━╸ #
+# ┃ ┣━┫┣╸    ┃┃┃┣╸ ┣━┫ ┃    ┃ ┃┣╸     ┃ ┣━┫┣╸    ┃  ┣━┫┣┻┓┣╸  #
+# ╹ ╹ ╹┗━╸   ╹ ╹┗━╸╹ ╹ ╹    ┗━┛╹      ╹ ╹ ╹┗━╸   ┗━╸╹ ╹╹ ╹┗━╸ #
+# ----------------------------------------------------------- #
 
 ## Getting prepared for the show
 get_platform
@@ -207,8 +236,12 @@ install_package zsh
 install_oh_my_zsh
 install_package tmux
 
+## Link easy dot files
 link_zshrc
 link_tmux_conf
-link_vimrc
 
+## Ok here we go, installing vim
+install_vim
+
+## and we are done, boot zsh
 env zsh
