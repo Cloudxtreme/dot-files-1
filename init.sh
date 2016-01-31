@@ -22,7 +22,7 @@ function get_platform() {
 
 # runs a command, exits if failes
 function run_cmd() {
-  $@ || { echo >&2 "Failed to run $1, aborting"; exit 1; }
+  $@ || { echo >&2 "Failed to run $@, aborting"; exit 1; }
 }
 
 # Install given package for platform
