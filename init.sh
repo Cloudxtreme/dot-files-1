@@ -20,6 +20,11 @@ function get_platform() {
   fi
 }
 
+# runs a command, exits if failes
+function run_cmd() {
+  $1 || { echo >&2 "Failed to run $1, aborting"; exit 1; }
+}
+
 # Install given package for platform
 function install_package() {
   echo "installing $1 for $platform"
@@ -74,15 +79,15 @@ function link_vimrc() {
 # The meat of the cake
 
 # Getting prepared for the show
-get_platform
-check_for_deps
-update_package_manager
+run_cmd get_platform
+run_cmd check_for_deps
+run_cmd update_package_manager
 
 # Installing and linking
-install_package zsh
-install_oh_my_zsh
-install_package tmux
+run_cmd install_package zsh
+run_cmd install_oh_my_zsh
+run_cmd install_package tmux
 
-link_zshrc
-link_tmux_conf
-link_vimrc
+run_cmd link_zshrc
+run_cmd link_tmux_conf
+run_cmd link_vimrc
