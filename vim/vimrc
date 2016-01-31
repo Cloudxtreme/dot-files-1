@@ -1,0 +1,230 @@
+set nocompatible
+set smartindent
+set expandtab
+set number
+
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+" Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+" Bundle 'ervandew/supertab'
+Bundle 'cakebaker/scss-syntax.vim'
+" Bundle 'Valloric/YouCompleteMe'
+
+filetype plugin indent on " Required
+
+"" use working directory vimrc
+" set exrc
+
+" autoload vimrc on change DOES NOT WORK POWERLINE AND SHIT
+" au BufWritePost .vimrc so /Users/piet/.vimrc
+
+execute pathogen#infect()
+
+syntax enable
+colorscheme Tomorrow-Night-Bright
+
+let mapleader = "\<Space>"
+set tabstop=2 shiftwidth=2 expandtab
+nmap ; :
+set backspace=2
+" distance from cursor
+set scrolloff=2
+" set relativenumber
+
+" find via // over visual selection
+vnoremap // y/<C-R>"<CR>"
+" drill with space ] over visual selection or word
+vnoremap <Leader>] y:fin <C-R>"<CR>"
+
+" next/prev quicklist item
+nmap <c-b> :cprevious<CR>
+nmap <c-n> :cnext<CR>
+
+" quickfix list for breakpoints
+nmap <Leader>i :Ag binding.pry<CR>
+
+" search color
+hi Search ctermfg=blue ctermbg=black
+hi Error ctermfg=red ctermbg=black
+
+" easy motion
+map <Leader> <Plug>(easymotion-prefix)
+
+" setup path find
+set path=$PWD/**
+
+" rsense
+let g:rsenseHome=$RSENSE_HOME
+
+" vim crosshairs
+hi CursorLine   cterm=NONE ctermbg=235
+hi CursorColumn cterm=NONE ctermbg=235
+nnoremap <Leader>x :set cursorline! cursorcolumn!<CR>
+
+" Rename for tmux
+autocmd BufReadPost,FileReadPost,BufNewFile * call system("tmux rename-window " . expand("%"))
+
+" power line fonts
+set guifont=Inconsolata\ for\ Powerline:h15
+let g:Powerline_symbols = 'fancy'
+set encoding=utf-8
+set t_Co=256
+set fillchars+=stl:\ ,stlnc:\
+set term=xterm-256color
+set termencoding=utf-8
+
+" NerdTREE
+map <leader>n :NERDTreeToggle<CR>
+let NERDTreeHighlightCursorline=1
+let NERDTreeIgnore = ['tmp', '.yardoc', 'pkg']
+
+" Recommended syntastic options
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" ctrlp custom configurations
+let g:ctrlp_max_files=0
+let g:ctrlp_max_files=0
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:15,results:50'
+" " dandelion specific
+let g:ctrlp_custom_ignore = 'node_modules/\|DS_Store/\|git/\|bower_components/\|vendor\|tmp\|db'
+
+" autocomplete navigation remp TODO wtf YCM
+" inoremap <expr> <C-j> ((pumvisible())?("\<C-n>"):("j"))
+" inoremap <expr> <C-k> ((pumvisible())?("\<C-p>"):("k"))
+
+" keep status line on
+set laststatus=2
+
+" keep tabline on
+" set showtabline=2
+
+" hide vim insert
+set noshowmode
+
+" buffer hotkeys
+nnoremap <Leader>1 :1b<CR>
+nnoremap <Leader>2 :2b<CR>
+nnoremap <Leader>3 :3b<CR>
+nnoremap <Leader>4 :4b<CR>
+nnoremap <Leader>5 :5b<CR>
+nnoremap <Leader>6 :6b<CR>
+nnoremap <Leader>7 :7b<CR>
+nnoremap <Leader>8 :8b<CR>
+nnoremap <Leader>9 :9b<CR>
+nnoremap <Leader>0 :10b<CR>
+
+" white space clean up
+nnoremap <Leader>w :FixWhitespace<CR>
+
+" toggle paste in cmd only
+nnoremap <Leader>p :set invpaste<CR>
+
+" vim airline
+let g:airline_powerline_fonts = 1
+
+" vim-rspec and vim-dispatch
+map <Leader>q :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>
+
+" dispatch + vim-... (rspec?)
+let g:rspec_command = "compiler rspec | set makeprg=zeus | Make rspec {spec}"
+
+" tagbar to show method tags
+nnoremap <Leader>v :TagbarToggle<CR>
+
+" delimitMate new line
+let delimitMate_expand_cr=1
+
+" Silver searcher custom optimzations
+let g:ag_prg = "ag --ignore-dir db --ignore-dir tmp --ignore-dir dist/assets --ignore-dir bower_components --ignore-dir vendor --vimgrep --smart-case --ignore-dir node_modules --ignore-dir bower_components --ignore-dir git --ignore npm-shrinkwrap.json"
+let g:ag_highlight=0
+
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g "" --ignore-dir node_modules --ignore DS_Store --ignore-dir git --ignore-dir bower_components --ignore-dir vendor --ignore-dir tmp --ignore-dir db --ignore app/resource'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+" shift K to search for word under cursor
+nnoremap K :Ag "\b<C-R><C-W>\b"<CR>:cw<CR>
+vmap K y:Ag "\b<C-R>0\b"<CR>:cw<CR>
+
+
+" syntax for .log
+autocmd BufRead,BufNewFile *.log set syntax=log4j
+
+" hook tmux-complete into ycm TODO clean up
+" let g:tmuxcomplete#trigger = 'omnifunc'
+
+" ruby syntax highlighting Gemf
+autocmd BufNewFile,BufRead Gemfile set filetype=ruby
+
+" vim diff colors
+highlight DiffAdd cterm=none ctermfg=blue ctermbg=black
+highlight DiffDelete cterm=none ctermfg=red ctermbg=none
+highlight DiffChange cterm=none ctermfg=green ctermbg=black
+highlight DiffText cterm=none ctermfg=white ctermbg=black
+highlight Error cterm=none ctermfg=red ctermbg=black
+highlight ErrorMsg cterm=none ctermfg=red ctermbg=none
+
+" expand-region
+vmap v <Plug>(expand_region_expand)
+
+" I dont like :setf html so i use htmlm4, would ike htmlm4 + eruby though
+autocmd BufNewFile,BufRead *.html set syntax=htmlm4
+
+" vim-mustache-handlebars
+let g:mustache_abbreviations = 1
+
+" json beautifier
+nnoremap <Leader>z :%!jq '.'<CR>
+
+nnoremap <Leader>= gg=G<CR>
+nnoremap <Leader>r :set relativenumber
+
+
+""" Does not work, check out snipmate or something
+
+" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-j>']
+let g:ycm_key_list_previous_completion = ['<C-k>']
+let g:SuperTabDefaultCompletionType = '<C-j>'
+
+" ultisnips directory
+"let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+ "If you want :UltiSnipsEdit to split your window.
+"let g:UltiSnipsEditSplit="vertical"
+
+" Copy to system clipboard
+map <Leader>e :w !pbcopy<CR><CR>
+
+
+autocmd BufReadPre *.js let b:javascript_lib_use_jquery = 1
+autocmd BufReadPre *.js let b:javascript_lib_use_underscore = 1
+autocmd BufReadPre *.js let b:javascript_lib_use_backbone = 1
+autocmd BufReadPre *.js let b:javascript_lib_use_prelude = 0
+autocmd BufReadPre *.js let b:javascript_lib_use_angularjs = 0

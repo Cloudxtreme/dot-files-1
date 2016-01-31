@@ -26,7 +26,7 @@ function install_package() {
   if [[ "$platform" == 'mac' ]]; then
     brew install $1
   elif [[ "$platform" == 'linux' ]]; then
-    sudo apt-get install $1
+    sudo apt-get install -y $1
   fi
 }
 
@@ -171,7 +171,9 @@ function mv_if_exists() {
   fi
 }
 
-homedir="$(realpath ~)"
+function set_homedir() {
+  homedir="$(realpath ~)"
+}
 
 function link_zshrc() {
   mv_if_exists "$homedir/.zshrc" "$homedir/.zshrc.old"
@@ -198,6 +200,7 @@ setup_colors
 check_for_deps
 update_package_manager
 install_package realpath
+set_homedir
 
 ## Installing and linking
 install_package zsh
@@ -207,3 +210,5 @@ install_package tmux
 link_zshrc
 link_tmux_conf
 link_vimrc
+
+env zsh
