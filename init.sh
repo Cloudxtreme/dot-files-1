@@ -60,7 +60,11 @@ function setup_colors() {
 function get_platform() {
   unamestr=`echo $OSTYPE`
   if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    platform='linux'
+    if [ -f "/etc/arch-release" ]; then
+      platform='linux-arch'
+    else
+      platform='linux'
+    fi
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     platform='mac'
   elif [[ "$OSTYPE" == "cygwin" ]]; then
@@ -79,11 +83,17 @@ function get_platform() {
 
 # Install given package for platform
 function install_package() {
-  print_green "Install $1 for $platform"
-  if [[ "$platform" == 'mac' ]]; then
-    brew install $1
-  elif [[ "$platform" == 'linux' ]]; then
-    sudo apt-get install -y $1
+  print_green "Installing $1 for $platform"
+  if ! which $1 > /dev/null; then
+    if [[ "$platform" == 'mac' ]]; then
+      brew install $1
+    elif [[ "$platform" == 'linux' ]]; then
+      sudo apt-get install -y $1
+    elif [[ "$platform" == 'linux-arch' ]]; then
+      yaourt -S --noconfirm $1
+    fi
+  else
+    print_green "$1 is already installed for $platform"
   fi
 }
 
@@ -93,6 +103,8 @@ function update_package_manager() {
     brew update
   elif [[ "$platform" == 'linux' ]]; then
     sudo apt-get update
+  elif [[ "$platform" == 'linux-arch' ]]; then
+    yaourt -Syu
   fi
 }
 
@@ -103,10 +115,12 @@ function install_brew() {
 
 function check_for_deps() {
   print_green "Checking for dependencies"
-  if [[ "$platform" == 'mmac' ]]; then
+  if [[ "$platform" == 'mac' ]]; then
     hash brew 2>/dev/null || { echo >&2 "I require brew but it's not installed. Installing homebrew "; install_brew; }
-  elif [[ "$platform" == 'mac' ]]; then
+  elif [[ "$platform" == 'linux' ]]; then
     hash apt-get 2>/dev/null || { echo >&2 "I require apt-get but it's not installed. Aborting"; exit 1; }
+  elif [[ "$platform" == 'linux-arch' ]]; then
+    hash yaourt 2>/dev/null || { echo >&2 "I require yaourt but it's not installed. Aborting"; exit 1; }
   fi
 }
 

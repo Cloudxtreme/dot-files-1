@@ -1,0 +1,67 @@
+set nocompatible
+set smartindent
+set number
+set tabstop=2 shiftwidth=2 expandtab
+
+syntax enable
+
+let mapleader = "\<Space>"
+
+nmap ; :
+
+set backspace=2
+
+" distance from cursor
+set scrolloff=2
+
+" find via // over visual selection
+vnoremap // y/<C-R>"<CR>"
+
+" drill with space ] over visual selection or word
+vnoremap <Leader>] y:fin <C-R>"<CR>"
+
+" next/prev quicklist item
+nmap <c-b> :cprevious<CR>
+nmap <c-n> :cnext<CR>
+
+" search color
+hi Search ctermfg=blue ctermbg=black
+hi Error ctermfg=red ctermbg=black
+
+" setup path find
+set path=$PWD/**
+
+" vim crosshairs
+hi CursorLine   cterm=NONE ctermbg=235
+hi CursorColumn cterm=NONE ctermbg=235
+nnoremap <Leader>x :set cursorline! cursorcolumn!<CR>
+
+" Rename for tmux
+autocmd BufReadPost,FileReadPost,BufNewFile * call system("tmux rename-window " . expand("%"))
+
+" keep status line on
+set laststatus=2
+
+" hide vim insert
+set noshowmode
+
+" buffer hotkeys
+nnoremap <Leader>1 :1b<CR>
+nnoremap <Leader>2 :2b<CR>
+nnoremap <Leader>3 :3b<CR>
+nnoremap <Leader>4 :4b<CR>
+nnoremap <Leader>5 :5b<CR>
+nnoremap <Leader>6 :6b<CR>
+nnoremap <Leader>7 :7b<CR>
+nnoremap <Leader>8 :8b<CR>
+nnoremap <Leader>9 :9b<CR>
+nnoremap <Leader>0 :10b<CR>
+
+" toggle paste in cmd only
+nnoremap <Leader>p :set invpaste<CR>
+
+" easy reallign
+nnoremap <Leader>= gg=G<CR>
+
+" relative number
+nnoremap <Leader>r :set relativenumber!<CR>
