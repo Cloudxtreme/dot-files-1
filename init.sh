@@ -65,6 +65,8 @@ function get_platform() {
     else
       platform='linux'
     fi
+  elif [[ "$OSTYPE" == "linux-gnueabihf" ]]; then
+    platform='linux'
   elif [[ "$OSTYPE" == "darwin"* ]]; then
     platform='mac'
   elif [[ "$OSTYPE" == "cygwin" ]]; then
