@@ -7,6 +7,7 @@ A collection of my personal dot-files plus an initialization script
 Vim plugins
 Arch install
 i3 install
+urxvt
 
 ## What it does now
 
